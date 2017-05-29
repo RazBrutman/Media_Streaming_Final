@@ -30,4 +30,4 @@ class MediaServer(object):
         connection.close()
         print "connection closed"
 
-MediaServer(54321)
+MediaServer(18000)

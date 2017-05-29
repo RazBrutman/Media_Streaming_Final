@@ -3,8 +3,7 @@ from controller import Controller
 
 
 def main():
-    controller = Controller('127.0.0.1', 54321)
-
+    controller = Controller()
 
 if __name__ == '__main__':
     main()

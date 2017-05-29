@@ -1,5 +1,6 @@
 import Tkinter as tk
 import ttk
+import os
 
 
 LARGE_FONT = ("Verdana", 12)  # font's family is Verdana, font's size is 12
@@ -65,13 +66,9 @@ class StartPage(tk.Frame):
         #button2.pack()
 
     def validate(self, event):
-        print event
         self.controller.validate(self.userentry.get(), self.passwentry.get())
         self.userentry.delete(0, 'end')
         self.passwentry.delete(0, 'end')
-
-        #Here should come the call to check the Database for username and password
-        #cont.show_frame(UserPage)
 
 
 class PageOne(tk.Frame):
@@ -80,6 +77,12 @@ class PageOne(tk.Frame):
         label = tk.Label(self, text='Page One', font=LARGE_FONT)
         label.pack(pady=10, padx=10)
 
-        button1 = tk.Button(self, text='Back to Home', command=lambda: pagecontroll.show_frame(StartPage, pages['StartPage']))
+        button1 = ttk.Button(self, text='Back to Home', command=lambda: pagecontroll.show_frame(StartPage, pages['StartPage']))
                                                                 # likewise StartPage
         button1.pack()
+        self.play = ttk.Button(self, text="Play")
+        self.play.bind("<Button>", self.Daemon)
+        self.play.pack()
+
+    def Daemon(self, event):
+        os.system("\"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe\" http://127.0.0.1:18000")
