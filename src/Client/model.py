@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
-import socket
-import select
-import msvcrt
-import os
 import httplib
-import sys
-from threading import Thread
+import pickle
 
 
 class Client(object):
 
     def send_msg(self, *args):
-        HttpClient('127.0.0.1', 8000).assignToThread(*args)
+        return HttpClient('127.0.0.1', 8000).getFriendInfo()
 
 
 class HttpClient(object):
@@ -20,17 +15,14 @@ class HttpClient(object):
         self.ip = ip
         self.port = port
 
-    def assignToThread(self, *args):
-        Thread(target=self.getFriendInfo).start()
-
     def getFriendInfo(self):
         conn = httplib.HTTPConnection(self.ip, self.port)
-        conn.request("GET", "\\")
+        conn.request("GET", "/Friends?name=raz")
         rsp = conn.getresponse()
         #print server response and data
         print(rsp.status, rsp.reason)
         data_received = rsp.read()
-        print(data_received)
+        friend_list = pickle.loads(data_received)
         conn.close()
-        return
+        return friend_list
 

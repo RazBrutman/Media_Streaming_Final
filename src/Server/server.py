@@ -1,5 +1,7 @@
 import BaseHTTPServer
 import SocketServer
+from urlparse import urlparse, parse_qs
+from User import MyTestData
 
 
 class Server(object):
@@ -20,8 +22,15 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_GET(self):
-        self._set_headers()
-        self.wfile.write("<html><body><h1>hi!</h1></body></html>")
+        #todo Change to switch
+        params = ""
+        if self.path.startswith("/Friends"):
+            params = parse_qs(urlparse(self.path).query)
+            #go to database and get all
+
+            #go to db get
+            self._set_headers()
+            self.wfile.write(MyTestData().get())
 
     def do_HEAD(self):
         self._set_headers()

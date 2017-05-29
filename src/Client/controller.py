@@ -23,8 +23,8 @@ class Controller(object):
         root.deiconify()
         root.mainloop()
 
-    def validate(self, un, pw):
-        self.model.send_msg(un, pw)
+    def validate(self):
+        return self.model.send_msg()
 
 
 

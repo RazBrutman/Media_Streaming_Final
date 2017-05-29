@@ -2,8 +2,10 @@ import Tkinter as tk
 import ttk
 import os
 
+from Constants import *
 
-LARGE_FONT = ("Verdana", 12)  # font's family is Verdana, font's size is 12
+
+LARGE_FONT = ("Verdana", 12)
 SMALL_FONT = ("Times New Roman", 11)
 pages = dict(StartPage='500x300',
              PageOne='300x300')
@@ -56,7 +58,7 @@ class StartPage(tk.Frame):
 
         buttons = tk.Frame(self)
         self.sub = ttk.Button(buttons, text="Submit")
-        self.sub.bind("<Button>", self.validate)
+        # self.sub.bind("<Button>", self.validate)
         self.sub.grid(row=0, pady=5)
         self.new = ttk.Button(buttons, text="Create new account", command=lambda: pagecontroll.show_frame(PageOne, pages['PageOne']))
         self.new.grid(row=1, pady=5)
@@ -65,14 +67,18 @@ class StartPage(tk.Frame):
         #button2 = ttk.Button(self, text="Visit Page 2", command=lambda: controller.show_frame(ViewFriendInfo))
         #button2.pack()
 
-    def validate(self, event):
-        self.controller.validate(self.userentry.get(), self.passwentry.get())
-        self.userentry.delete(0, 'end')
-        self.passwentry.delete(0, 'end')
+    # def validate(self, event):
+    #     self.controller.validate(self.userentry.get(), self.passwentry.get())
+    #     self.userentry.delete(0, 'end')
+    #     self.passwentry.delete(0, 'end')
 
 
 class PageOne(tk.Frame):
+
     def __init__(self, parent, pagecontroll, controller):
+
+        self.controller = controller
+
         tk.Frame.__init__(self, parent)
         label = tk.Label(self, text='Page One', font=LARGE_FONT)
         label.pack(pady=10, padx=10)
@@ -85,4 +91,5 @@ class PageOne(tk.Frame):
         self.play.pack()
 
     def Daemon(self, event):
-        os.system("\"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe\" http://127.0.0.1:18000")
+        raz = self.controller.validate()[0]
+        os.system(VLC_STREAM_URL + " http://" + raz.ip + ":18000/" + raz.files[1])
