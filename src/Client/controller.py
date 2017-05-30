@@ -25,7 +25,3 @@ class Controller(object):
 
     def validate(self):
         return self.model.send_msg()
-
-
-
-
