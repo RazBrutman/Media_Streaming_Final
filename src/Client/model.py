@@ -3,11 +3,13 @@ import httplib
 from threading import Thread
 import pickle
 from Queue import Queue
+import errno
 
 
 class Client(object):
-    def send_msg(self, *args):
-        return HttpClient('127.0.0.1', 8000).assignToThread(*args)
+
+    def send_msg(self, url):
+        return HttpClient('127.0.0.1', 8000).assignToThread(url)
 
 
 class HttpClient(object):
@@ -16,22 +18,18 @@ class HttpClient(object):
         self.ip = ip
         self.port = port
 
-    def assignToThread(self, *args):
+    def assignToThread(self, url):
         q = Queue()
-        Thread(target=self.getFriendInfo, args=[q]).start()
+        Thread(target=self.Request, args=[url, q]).start()
         return q.get()
 
-    def getFriendInfo(self, q):
+    def Request(self, url, q):
         conn = httplib.HTTPConnection(self.ip, self.port)
-        conn.request("GET", "/Friends?name=Raz")
+        conn.request("GET", url)
         rsp = conn.getresponse()
         #print server response and data
-        print(rsp.status, rsp.reason)
-        data_received = rsp.read()
-        friend_list = pickle.loads(data_received)
+        data = rsp.read()
+        if url.startswith("/Friends"):
+            data = pickle.loads(data)
+        q.put(data)
         conn.close()
-        q.put(friend_list)
-
-
-
-

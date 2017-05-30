@@ -86,8 +86,7 @@ class database(object):
         self.c.execute("SELECT ID FROM USERTABLE WHERE Username == '" + username + "'")
         user_id = self.c.fetchone()[0]
         self.c.execute("SELECT * FROM FRIENDSTABLE WHERE (F1ID = " + str(user_id) + " OR F2ID = " + str(user_id) + ")")
-        relationships = self.c.fetchall()
-        friends = [x[1] if x[0] == user_id else x[0] for x in relationships]
+        friends = [x[1] if x[0] == user_id else x[0] for x in self.c.fetchall()]
         to_return = []
         for friend in friends:
             self.c.execute("SELECT * FROM USERTABLE WHERE ID = " + str(friend))
@@ -95,3 +94,9 @@ class database(object):
             to_return.append(User(data[1], data[2]))
         return pickle.dumps(to_return)
 
+    def get_files(self, username):
+        self.c.execute("SELECT ID FROM USERTABLE WHERE Username == '" + username + "'")
+        owner_id = self.c.fetchone()[0]
+        self.c.execute("SELECT FileName FROM FILETABLE WHERE OwnerID == '" + str(owner_id) + "'")
+        files = " ".join([x[0] for x in self.c.fetchall()])
+        return files

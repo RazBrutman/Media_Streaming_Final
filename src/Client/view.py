@@ -1,6 +1,7 @@
 import Tkinter as tk
 import ttk
 import os
+from threading import Thread
 
 from Constants import *
 
@@ -61,7 +62,8 @@ class StartPage(tk.Frame):
         self.sub = ttk.Button(buttons, text="Submit")
         # self.sub.bind("<Button>", self.validate)
         self.sub.grid(row=0, pady=5)
-        self.new = ttk.Button(buttons, text="Create new account", command=lambda: pagecontroll.show_frame(PageOne, pages['PageOne']))
+        self.new = ttk.Button(buttons, text="Create new account",
+                              command=lambda: pagecontroll.show_frame(PageOne, pages['PageOne']))
         self.new.grid(row=1, pady=5)
         buttons.pack()
 
@@ -91,10 +93,10 @@ class PageOne(tk.Frame):
         button1.pack()
         button2.pack()
         self.play = ttk.Button(self, text="Play")
-        self.play.bind("<Button>", self.Daemon)
+        self.play.bind("<Button>", self.daemon)
         self.play.pack()
 
-    def Daemon(self, event):
+    def daemon(self, event):
         raz = self.controller.validate()[0]
         os.system(VLC_STREAM_URL + " http://" + raz.ip + ":18000/" + DEFAULT)
 
@@ -104,12 +106,36 @@ class MainUserPage(tk.Frame):
     def __init__(self, parent, pagecontroll, controller):
 
         tk.Frame.__init__(self, parent)  # construct frame
+
         self.controller = controller
-        right_frame = tk.Frame(self)
+
+        self.right_frame = tk.Frame(self)
         friends = self.controller.validate()
         for user in friends:
-            ttk.Label(right_frame, text=user.username, font=SMALL_FONT).pack()
-        right_frame.pack(side="right")
-        left_frame = tk.Frame(self)
-        ttk.Label(left_frame, text="Some text", font=LARGE_FONT).pack()
-        left_frame.pack(side="left")
+            l = ttk.Label(self.right_frame, text=user.username, font=SMALL_FONT)
+            l.bind("<Button>", lambda event, data=user: self.test(event, data))
+            l.pack(side="top")
+        self.right_frame.pack(side=tk.RIGHT, padx=20)
+
+        self.left_frame = tk.Frame(self, bg="#888888", width=100, height=10)
+        self.info = ttk.Label(self.left_frame, text="Some text", font=LARGE_FONT, background="#888888")
+        self.info.pack(fill="none", expand=True)
+        self.left_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+
+    def test(self, event, user):
+        file_list = self.controller.user_files(user.username)
+        for child in self.left_frame.winfo_children():
+            child.destroy()
+        files = file_list.split(" ")
+        files_frame = tk.Frame(self.left_frame, background="#888888")
+        for element in files:
+            l = ttk.Label(files_frame, text=element, font=SMALL_FONT, background="#888888")
+            l.bind("<Button>", lambda e=event, u=user: self.daemon(e, u))
+            l.pack()
+        files_frame.pack(fill="none", expand=True)
+
+    def daemon(self, event, user):
+        Thread(target=self.playthread, args=[user.ip, event.widget['text']]).start()
+
+    def playthread(self, ip, path):
+        os.system(VLC_STREAM_URL + " http://" + ip + ":18000/" + path)

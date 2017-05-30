@@ -24,4 +24,7 @@ class Controller(object):
         root.mainloop()
 
     def validate(self):
-        return self.model.send_msg()
+        return self.model.send_msg("/Friends?name=Raz")
+
+    def user_files(self, name):
+        return self.model.send_msg("/Files?name=" + name)
