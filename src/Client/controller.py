@@ -2,6 +2,7 @@
 from model import Client
 from view import StreamerGUI
 import Tkinter as tk
+import tkMessageBox
 import socket
 
 
@@ -14,7 +15,6 @@ class Controller(object):
 
     def run(self):
         root = self.root
-
         #root.geometry("100x100")
         #root.resizable(width=False, height=False)
         root.iconbitmap(r"..\..\resources\favicon.ico")
@@ -30,3 +30,7 @@ class Controller(object):
 
     def user_files(self, name):
         return self.model.send_msg("/Files?name=" + name)
+
+    def add_path(self, path, name):
+        self.model.send_msg("/Path?p=" + path + "&name=" + name)
+        tkMessageBox.askokcancel("Success!", "You have successfuly added a file to your shared files")

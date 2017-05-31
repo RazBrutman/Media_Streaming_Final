@@ -89,7 +89,7 @@ class database(object):
             self.add_user(username, ip)
         else:
             self.c.execute("UPDATE USERTABLE SET IP = '" + ip + "' WHERE Username = '" + username + "'")
-        return "1"
+        return username
 
     def get_friends(self, username):
         self.c.execute("SELECT ID FROM USERTABLE WHERE Username = '" + username + "'")

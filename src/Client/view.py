@@ -1,7 +1,9 @@
 import Tkinter as tk
+import tkFileDialog
 import ttk
 import os
 from threading import Thread
+from PIL import ImageTk, Image
 
 from Constants import *
 
@@ -10,7 +12,7 @@ LARGE_FONT = ("Verdana", 12)
 SMALL_FONT = ("Times New Roman", 11)
 
 
-pages = dict(StartPage='300x200',
+pages = dict(StartPage='400x300',
              MainUserPage='600x400')
 
 
@@ -23,6 +25,8 @@ class StreamerGUI(object):
 
         self.root = root
         self.controller = controller
+
+        self.username = ""
 
         self.container = tk.Frame(root)
         self.container.pack(side="top", fill="both", expand=True)
@@ -47,7 +51,8 @@ class StreamerGUI(object):
             import re
             if not re.match("^[a-zA-Z0-9_]*$", username):
                 frame.invalid.pack()
-            elif self.controller.user_exists(username) == '1':
+            else:
+                self.username = username
                 self.start_main_page(frame)
                 frame.userentry.delete(0, 'end')
                 frame.invalid.pack_forget()
@@ -71,7 +76,7 @@ class StartPage(tk.Frame):
         self.pagecontrol = pagecontrol
 
         label = ttk.Label(self, text="Welcome to Streamer!", font=LARGE_FONT)
-        label.pack(pady=10)
+        label.pack(pady=(30, 10))
         info = tk.Frame(self)
         user = ttk.Label(info, text="Username:", font=SMALL_FONT)
         user.grid(row=0)
@@ -94,6 +99,7 @@ class MainUserPage(tk.Frame):
         tk.Frame.__init__(self, parent)  # constructs frame
 
         self.controller = controller
+        self.pagecontrol = pagecontrol
 
         self.right_frame = tk.Frame(self)
         friends = self.controller.validate(username)
@@ -105,19 +111,33 @@ class MainUserPage(tk.Frame):
         button1 = ttk.Button(self.right_frame, text='Back to Home',
                              command=lambda: pagecontrol.show_frame(StartPage, pages['StartPage']))
         button1.pack(side="bottom", pady=10)
+
+        img = ImageTk.PhotoImage(Image.open("add_btn.png").resize((40, 40), Image.ANTIALIAS))
+        add = ttk.Label(self.right_frame, text="I add", image=img)
+        add.image = img
+        add.pack(side="bottom", padx=20, pady=20)
+        add.bind("<Button>", self.add_file)
+
         self.right_frame.pack(side=tk.RIGHT, padx=20, fill=tk.Y)
 
-        self.left_frame = tk.Frame(self, bg="#888888", width=100, height=10)
-        self.info = ttk.Label(self.left_frame, text="No friends yet :(", font=LARGE_FONT, background="#888888")
+        self.left_frame = tk.Frame(self, bg="#888888")
+        self.text_subframe = tk.Frame(self.left_frame)
+        self.info = ttk.Label(self.text_subframe, text="No friends yet :(", font=LARGE_FONT, background="#888888")
         if friends:
             self.info['text'] = "Click on name to view files..."
         self.info.pack(fill="none", expand=True)
+        self.text_subframe.pack()
+
         self.left_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+
+    def add_file(self, event):
+        file_path = tkFileDialog.askopenfilename()
+        self.controller.add_path(file_path, self.pagecontrol.username)
 
     def test(self, event, user):
         file_list = self.controller.user_files(user.username)
         for child in self.left_frame.winfo_children():
-            child.destroy()
+                child.destroy()
         files = file_list.split(" ")
         files_frame = tk.Frame(self.left_frame, background="#888888")
         for element in files:
