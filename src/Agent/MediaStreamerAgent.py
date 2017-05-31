@@ -27,13 +27,13 @@ class MediaServer(object):
         path = data.split(" ")[1][1:]
         print "new connection\nIP:", client[0], "\nPort:", client[1]
         connection.send("""HTTP/1.1 200 OK
-        Content-Type: audio/mp3\r\n\r\n""")
+        Content-Type: application/octet-stream\r\nCache-Control: no-cache\r\n\r\n""")
         f = open(path, "rb")
-        l = f.read(1024)
+        l = f.read(4096)
         while l:
             try:
                 connection.send(l)
-                l = f.read(1024)
+                l = f.read(4096)
             except socket.error:
                 break
         f.close()
