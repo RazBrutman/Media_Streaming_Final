@@ -6,7 +6,10 @@ import tkMessageBox
 import socket
 from threading import Thread
 import os
-from Constants import *
+
+import sys
+sys.path.insert(0, '../Commons')
+from Config import *
 
 
 
@@ -21,7 +24,7 @@ class Controller(object):
         root = self.root
         #root.geometry("100x100")
         #root.resizable(width=False, height=False)
-        root.iconbitmap(r"..\..\resources\favicon.ico")
+        root.iconbitmap(r"favicon.ico")
         root.title("Streamer")
         root.deiconify()
         root.mainloop()
@@ -36,7 +39,7 @@ class Controller(object):
         return self.model.send_msg("/Files?name=" + name)
 
     def add_path(self, path, name):
-        return self.model.send_msg("/Path?p='" + path + "'&name=" + name)
+        return self.model.send_msg("/Path?p=" + path + "&name=" + name)
 
     def daemon(self, event, user):
         Thread(target=self.playthread, args=[user.ip, event.widget['text']]).start()

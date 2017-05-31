@@ -1,0 +1,4 @@
+VLC_STREAM_URL = "\"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe\""
+SERVER_IP = '10.0.0.8'
+SERVER_PORT = 8000
+STREAMER_PORT = 18000

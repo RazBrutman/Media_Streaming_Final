@@ -42,7 +42,7 @@ class StreamerGUI(object):
         frame.tkraise()
 
     def validate_username(self, frame):
-        username = frame.userentry.get()
+        username = self.controller.user_exists(frame.userentry.get())
         if username:
             import re
             if not re.match("^[a-zA-Z0-9_]*$", username):
@@ -108,11 +108,8 @@ class MainUserPage(tk.Frame):
                              command=lambda: pagecontrol.show_frame(StartPage, pages['StartPage']))
         button1.pack(side="bottom", pady=10)
 
-        img = ImageTk.PhotoImage(Image.open("add_btn.png").resize((40, 40), Image.ANTIALIAS))
-        add = ttk.Label(self.right_frame, text="I add", image=img)
-        add.image = img
+        add = ttk.Button(self.right_frame, text="Add shared media", command=self.add_file)
         add.pack(side="bottom", padx=20, pady=20)
-        add.bind("<Button>", self.add_file)
 
         self.right_frame.pack(side=tk.RIGHT, padx=20, fill=tk.Y)
 
@@ -126,9 +123,12 @@ class MainUserPage(tk.Frame):
 
         self.left_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
-    def add_file(self, event):
-        file_path = tkFileDialog.askopenfilename()
-        print self.controller.add_path(file_path, self.pagecontrol.username)
+    def add_file(self):
+        file_path = tkFileDialog.askopenfilename(initialdir="/",
+                                                 title="Select file",
+                                                 filetypes=(("jpeg files", "*.mp3;*.mp4"), ("all files", "*.*")))
+        if file_path:
+            self.controller.add_path(file_path, self.pagecontrol.username)
 
     def test(self, event, user):
         file_list = self.controller.user_files(user.username)

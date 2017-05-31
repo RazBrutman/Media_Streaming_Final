@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import httplib
 from threading import Thread
 import pickle
@@ -6,13 +5,14 @@ from Queue import Queue
 import sys
 sys.path.insert(0, '../Commons')
 import User
+from Config import *
 
 
 
 class Client(object):
 
     def send_msg(self, url):
-        return HttpClient('127.0.0.1', 8000).assignToThread(url)
+        return HttpClient(SERVER_IP, SERVER_PORT).assignToThread(url)
 
 
 class HttpClient(object):

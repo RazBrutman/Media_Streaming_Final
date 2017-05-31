@@ -2,6 +2,10 @@
 import socket
 from threading import Thread
 
+import sys
+sys.path.insert(0, '../Commons')
+from Config import *
+
 
 class MediaServer(object):
 
@@ -17,13 +21,6 @@ class MediaServer(object):
 
     def HandleClient(self, connection, client):
         data = connection.recv(2048)
-
-    # 'GET /D:\\Music\\green_day_holiday.mp3 HTTP/1.1
-    # Host: 10.0.0.8:18000
-    # User-Agent: VLC/2.2.6 LibVLC/2.2.6
-    # Range: bytes=0-
-    # Connection: close
-    # Icy-MetaData: 1'
         path = data.split(" ")[1][1:]
         print "new connection\nIP:", client[0], "\nPort:", client[1]
         connection.send("""HTTP/1.1 200 OK
@@ -40,4 +37,4 @@ class MediaServer(object):
         connection.close()
         print "connection closed"
 
-MediaServer(18000)
+MediaServer(STREAMER_PORT)

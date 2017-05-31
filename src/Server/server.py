@@ -3,14 +3,15 @@ import SocketServer
 from urlparse import urlparse, parse_qs
 from database import database
 
+import sys
+sys.path.insert(0, '../Commons')
+from Config import *
 
 class Server(object):
 
     def __init__(self):
-
-        PORT = 8000
         Handler = CostumeHandler
-        httpd = SocketServer.TCPServer(("", PORT), Handler)
+        httpd = SocketServer.TCPServer(("", SERVER_PORT), Handler)
         print "started"
         httpd.serve_forever()
 
@@ -23,7 +24,6 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_GET(self):
-        #TODO: Change to switch
         params = ""
         db = database()
 
@@ -47,6 +47,7 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         elif self.path.startswith("/Path"):
             params = parse_qs(urlparse(self.path).query)
             db.add_file(params['p'][0], params['name'][0])
+            self.wfile.write("1")
 
         else:
             self.wfile.write("<html><body><h1>Hi!</h1></body></html>")
