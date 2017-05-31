@@ -1,11 +1,7 @@
 import Tkinter as tk
 import tkFileDialog
 import ttk
-import os
-from threading import Thread
 from PIL import ImageTk, Image
-
-from Constants import *
 
 
 LARGE_FONT = ("Verdana", 12)
@@ -132,7 +128,7 @@ class MainUserPage(tk.Frame):
 
     def add_file(self, event):
         file_path = tkFileDialog.askopenfilename()
-        self.controller.add_path(file_path, self.pagecontrol.username)
+        print self.controller.add_path(file_path, self.pagecontrol.username)
 
     def test(self, event, user):
         file_list = self.controller.user_files(user.username)
@@ -142,12 +138,6 @@ class MainUserPage(tk.Frame):
         files_frame = tk.Frame(self.left_frame, background="#888888")
         for element in files:
             l = ttk.Label(files_frame, text=element, font=SMALL_FONT, background="#888888")
-            l.bind("<Button>", lambda e=event, u=user: self.daemon(e, u))
+            l.bind("<Button>", lambda e=event, u=user: self.controller.daemon(e, u))
             l.pack()
         files_frame.pack(fill="none", expand=True)
-
-    def daemon(self, event, user):
-        Thread(target=self.playthread, args=[user.ip, event.widget['text']]).start()
-
-    def playthread(self, ip, path):
-        os.system(VLC_STREAM_URL + " http://" + ip + ":18000/" + path)

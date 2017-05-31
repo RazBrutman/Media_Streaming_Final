@@ -1,4 +1,6 @@
 import sqlite3
+import sys
+sys.path.insert(0, '../Commons')
 from User import User
 import pickle
 

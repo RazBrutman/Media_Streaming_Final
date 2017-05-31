@@ -3,7 +3,10 @@ import httplib
 from threading import Thread
 import pickle
 from Queue import Queue
-import errno
+import sys
+sys.path.insert(0, '../Commons')
+import User
+
 
 
 class Client(object):
