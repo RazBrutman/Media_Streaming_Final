@@ -25,28 +25,29 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(self):
         #TODO: Change to switch
         params = ""
+
         self._set_headers()
 
-        if self.path.startswith("/Friends"):
+        if self.path.startswith("/User"):
             params = parse_qs(urlparse(self.path).query)
-            friends = database().get_friends(params['name'][0])
+            db = database()
+            self.wfile.write(db.get_user(params['name'][0], params['ip'][0]))
+
+        elif self.path.startswith("/Friends"):
+            params = parse_qs(urlparse(self.path).query)
+            db = database()
+            friends = db.get_friends(params['name'][0])
             self.wfile.write(friends)
+            db.close_db()
 
         elif self.path.startswith("/Files"):
             params = parse_qs(urlparse(self.path).query)
-            files = database().get_files(params['name'][0])
+            db = database()
+            files = db.get_files(params['name'][0])
             self.wfile.write(files)
+            db.close_db()
 
         else:
             self.wfile.write("<html><body><h1>Hi!</h1></body></html>")
-
-    def do_HEAD(self):
-        self._set_headers()
-
-    def do_POST(self):
-        # Doesn't do anything with posted data
-        self._set_headers()
-        self.wfile.write("<html><body><h1>POST!</h1></body></html>")
-
 
 Server()

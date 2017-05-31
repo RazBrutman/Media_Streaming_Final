@@ -2,8 +2,7 @@
 from model import Client
 from view import StreamerGUI
 import Tkinter as tk
-import tkMessageBox
-#import database
+import socket
 
 
 class Controller(object):
@@ -23,8 +22,11 @@ class Controller(object):
         root.deiconify()
         root.mainloop()
 
-    def validate(self):
-        return self.model.send_msg("/Friends?name=Raz")
+    def user_exists(self, name):
+        return self.model.send_msg("/User?name=" + name + "&ip=" + socket.gethostbyname_ex(socket.gethostname())[2][1])
+
+    def validate(self, name):
+        return self.model.send_msg("/Friends?name=" + name)
 
     def user_files(self, name):
         return self.model.send_msg("/Files?name=" + name)

@@ -17,8 +17,8 @@ class database(object):
     def static_users_for_test(self):
         static_users = [['Raz', '10.0.0.8', ["D:\Music\green_day_holiday.mp3",
                                              "D:\Movies\sample.avi"]],
-                        ['Gai', '10.0.0.4', ["C:\Downloads\RONDO.mp3",
-                                             "C:\Downloads\NET.mp4",
+                        ['Gai', '10.0.0.4', ["C:\Users\gai\Downloads\RONDO.mp3",
+                                             "C:\Users\gai\Downloads\NET.mp4",
                                              "C:\Downloads\Rey.mp4"]],
                         ['Yuval', '10.0.0.10', ["C:\Music\pentatonix_song.mp3",
                                                 "C:\Movies\Frozen.mp4"]],
@@ -82,17 +82,27 @@ class database(object):
         self.c.close()
         self.conn.close()
 
+    def get_user(self, username, ip):
+        self.c.execute("SELECT * FROM USERTABLE WHERE Username == '" + username + "'")
+        user_info = self.c.fetchall()
+        if not user_info:
+            self.add_user(username, ip)
+        else:
+            self.c.execute("UPDATE USERTABLE SET IP = '" + ip + "' WHERE Username = '" + username + "'")
+        return "1"
+
     def get_friends(self, username):
-        self.c.execute("SELECT ID FROM USERTABLE WHERE Username == '" + username + "'")
+        self.c.execute("SELECT ID FROM USERTABLE WHERE Username = '" + username + "'")
         user_id = self.c.fetchone()[0]
-        self.c.execute("SELECT * FROM FRIENDSTABLE WHERE (F1ID = " + str(user_id) + " OR F2ID = " + str(user_id) + ")")
-        friends = [x[1] if x[0] == user_id else x[0] for x in self.c.fetchall()]
-        to_return = []
-        for friend in friends:
-            self.c.execute("SELECT * FROM USERTABLE WHERE ID = " + str(friend))
-            data = self.c.fetchone()
-            to_return.append(User(data[1], data[2]))
-        return pickle.dumps(to_return)
+        if user_id:
+            self.c.execute("SELECT * FROM FRIENDSTABLE WHERE (F1ID = " + str(user_id) + " OR F2ID = " + str(user_id) + ")")
+            friends = [x[1] if x[0] == user_id else x[0] for x in self.c.fetchall()]
+            to_return = []
+            for friend in friends:
+                self.c.execute("SELECT * FROM USERTABLE WHERE ID = " + str(friend))
+                data = self.c.fetchone()
+                to_return.append(User(data[1], data[2]))
+            return pickle.dumps(to_return)
 
     def get_files(self, username):
         self.c.execute("SELECT ID FROM USERTABLE WHERE Username == '" + username + "'")
