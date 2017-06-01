@@ -10,10 +10,7 @@ class database(object):
         self.conn = sqlite3.connect('database.db')
         self.c = self.conn.cursor()
         self.create_tables()
-        # self.clear_tables()
-        # self.static_users_for_test()
-        # self.c.close()
-        # self.conn.close()
+
 
     def create_tables(self):
         self.c.execute("CREATE TABLE IF NOT EXISTS USERTABLE(ID INTEGER PRIMARY KEY AUTOINCREMENT, "

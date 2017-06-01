@@ -177,11 +177,12 @@ class MainUserPage(tk.Frame):
             .pack(anchor="nw", pady=30, padx=30)
         if files[0] != "":
             for element in files:
+                shortened = []
                 if element.split("/")[0] == element:
-                    element = element.split("\\")
+                    shortened = element.split("\\")[-1]
                 else:
-                    element = element.split("/")
-                l = (ttk.Label(files_frame, text=element[-1], font=SMALL_FONT, background=BG_COLOR), element)
+                    shortened = element.split("/")[-1]
+                l = (ttk.Label(files_frame, text=shortened, font=SMALL_FONT, background=BG_COLOR), element)
                 l[0].bind("<Button>", lambda e=event, u=user, p=l[1]: self.controller.daemon(e, u, p))
                 l[0].pack(anchor="w")
         else:
