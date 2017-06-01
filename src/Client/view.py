@@ -1,15 +1,18 @@
 import Tkinter as tk
+from Tkinter import *
 import tkFileDialog
 import ttk
-from PIL import ImageTk, Image
+from ttk import *
 
 
-LARGE_FONT = ("Verdana", 12)
-SMALL_FONT = ("Times New Roman", 11)
-
+STREAMER_FONT = ("Chaparral Pro", 26)
+LARGE_FONT = ("Calibri", 22)
+SMALL_FONT = ("Chaparral Pro", 14)
+SMALLER_FONT = ("Calibri", 12)
+BG_COLOR = "#888888"
 
 pages = dict(StartPage='400x300',
-             MainUserPage='600x400')
+             MainUserPage='650x400')
 
 
 class StreamerGUI(object):
@@ -54,8 +57,6 @@ class StreamerGUI(object):
                 frame.invalid.pack_forget()
 
     def start_main_page(self, frame):
-        # friends = self.controller.validate(username)
-        # if friends:
         page_2 = MainUserPage(self.container, self, self.controller, frame.userentry.get())
         self.frames[MainUserPage] = page_2
         page_2.grid(row=0, column=0, sticky="nsew")
@@ -71,21 +72,18 @@ class StartPage(tk.Frame):
         self.controller = controller
         self.pagecontrol = pagecontrol
 
-        label = ttk.Label(self, text="Welcome to Streamer!", font=LARGE_FONT)
+        label = ttk.Label(self, text="Welcome to Streamer", font=STREAMER_FONT)
         label.pack(pady=(30, 10))
         info = tk.Frame(self)
-        user = ttk.Label(info, text="Username:", font=SMALL_FONT)
-        user.grid(row=0)
-        self.userentry = ttk.Entry(info)
+        user = ttk.Label(info, text="Username", font=SMALL_FONT)
+        user.grid(row=0, sticky="w")
+        self.userentry = ttk.Entry(info, font=SMALLER_FONT)
         self.userentry.grid(row=1)
-        self.invalid = ttk.Label(self, text="Invalid Username!", font=SMALL_FONT, foreground="red")
+        self.invalid = ttk.Label(self, text="Invalid Username!", foreground="red")
         self.sub = ttk.Button(info, text="Submit",
                               command=lambda: self.pagecontrol.validate_username(self))
         self.sub.grid(row=2, pady=10)
         info.pack(pady=10)
-        # self.new = ttk.Button(buttons, text="Create new account",
-        #                       command=lambda: pagecontroll.show_frame(PageOne, pages['PageOne']))
-        # self.new.grid(row=1, pady=5)
 
 
 class MainUserPage(tk.Frame):
@@ -94,34 +92,73 @@ class MainUserPage(tk.Frame):
 
         tk.Frame.__init__(self, parent)  # constructs frame
 
+        self.username = username
+
         self.controller = controller
         self.pagecontrol = pagecontrol
 
+        top_frame = tk.Frame(self)
+
+        choices = []
+        all_users = self.controller.get_all(username)
+        for user in all_users:
+            choices.append(user.username)
+        self.tkvar = StringVar(top_frame)
+        self.tkvar.set(choices[0])
+        popupMenu = OptionMenu(top_frame, self.tkvar, choices[0], *choices)
+        Label(top_frame, text="add friend:").pack(side="left")
+        popupMenu.pack(side="left")
+        f_button = ttk.Button(top_frame, text="Select", command=self.add_friend)
+        f_button.pack(side="left")
+        top_frame.pack(anchor="nw")
+
         self.right_frame = tk.Frame(self)
+
+        self.top_right_frame = VerticalScrolledFrame(self.right_frame)
+
         friends = self.controller.validate(username)
         for user in friends:
-            l = ttk.Label(self.right_frame, text=user.username, font=SMALL_FONT)
+            l = ttk.Label(self.top_right_frame.interior, text=user.username, font=SMALL_FONT)
             l.bind("<Button>", lambda event, data=user: self.test(event, data))
             l.pack(side="top", pady=10)
 
-        button1 = ttk.Button(self.right_frame, text='Back to Home',
+        self.bottom_right_frame = tk.Frame(self.right_frame)
+        button1 = ttk.Button(self.bottom_right_frame, text='Back to Home',
                              command=lambda: pagecontrol.show_frame(StartPage, pages['StartPage']))
         button1.pack(side="bottom", pady=10)
 
-        add = ttk.Button(self.right_frame, text="Add shared media", command=self.add_file)
+        add = ttk.Button(self.bottom_right_frame, text="Add shared media", command=self.add_file)
         add.pack(side="bottom", padx=20, pady=20)
 
-        self.right_frame.pack(side=tk.RIGHT, padx=20, fill=tk.Y)
+        self.top_right_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.bottom_right_frame.pack(side=tk.BOTTOM)
+
+        self.right_frame.pack(side=tk.RIGHT)
 
         self.left_frame = tk.Frame(self, bg="#888888")
-        self.text_subframe = tk.Frame(self.left_frame)
-        self.info = ttk.Label(self.text_subframe, text="No friends yet :(", font=LARGE_FONT, background="#888888")
+
+        self.info = ttk.Label(self.left_frame, text="No friends yet :(", font=LARGE_FONT, background=BG_COLOR)
         if friends:
             self.info['text'] = "Click on name to view files..."
-        self.info.pack(fill="none", expand=True)
-        self.text_subframe.pack()
+        self.info.pack(fill="none", expand=True, anchor="nw", pady=30, padx=30)
 
         self.left_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+
+    def add_friend(self):
+        self.controller.befriend(self.pagecontrol.username, self.tkvar.get())
+        self.update_friends()
+
+    def update_friends(self):
+        friends = self.controller.validate(self.username)
+        for user in friends:
+            add = True
+            for child in self.top_right_frame.interior.winfo_children():
+                if child['text'] == user.username:
+                    add = False
+            if add:
+                l = ttk.Label(self.top_right_frame.interior, text=user.username, font=SMALL_FONT)
+                l.bind("<Button>", lambda event, data=user: self.test(event, data))
+                l.pack(side="top", pady=10)
 
     def add_file(self):
         file_path = tkFileDialog.askopenfilename(initialdir="/",
@@ -135,9 +172,56 @@ class MainUserPage(tk.Frame):
         for child in self.left_frame.winfo_children():
                 child.destroy()
         files = file_list.split(" ")
-        files_frame = tk.Frame(self.left_frame, background="#888888")
-        for element in files:
-            l = ttk.Label(files_frame, text=element, font=SMALL_FONT, background="#888888")
-            l.bind("<Button>", lambda e=event, u=user: self.controller.daemon(e, u))
-            l.pack()
-        files_frame.pack(fill="none", expand=True)
+        files_frame = tk.Frame(self.left_frame, background=BG_COLOR)
+        ttk.Label(self.left_frame, text='Shared files', font=LARGE_FONT, background=BG_COLOR)\
+            .pack(anchor="nw", pady=30, padx=30)
+        if files[0] != "":
+            for element in files:
+                if element.split("/")[0] == element:
+                    element = element.split("\\")
+                else:
+                    element = element.split("/")
+                l = (ttk.Label(files_frame, text=element[-1], font=SMALL_FONT, background=BG_COLOR), element)
+                l[0].bind("<Button>", lambda e=event, u=user, p=l[1]: self.controller.daemon(e, u, p))
+                l[0].pack(anchor="w")
+        else:
+            ttk.Label(files_frame, text="No files", font=SMALL_FONT, background=BG_COLOR).pack(anchor="w")
+        files_frame.pack(fill="none", expand=True, anchor="nw", padx=30, pady=30)
+
+
+class VerticalScrolledFrame(Frame):
+    def __init__(self, parent, *args, **kw):
+        Frame.__init__(self, parent, *args, **kw)
+
+        # create a canvas object and a vertical scrollbar for scrolling it
+        vscrollbar = Scrollbar(self, orient=VERTICAL)
+        vscrollbar.pack(fill=Y, side=RIGHT, expand=FALSE)
+        canvas = Canvas(self, bd=0, highlightthickness=0, yscrollcommand=vscrollbar.set)
+        canvas.pack(side=LEFT, fill=BOTH, expand=TRUE)
+        vscrollbar.config(command=canvas.yview)
+
+        # reset the view
+        canvas.xview_moveto(0)
+        canvas.yview_moveto(0)
+
+        # create a frame inside the canvas which will be scrolled with it
+        self.interior = interior = tk.Frame(canvas)
+        interior_id = canvas.create_window(0, 0, window=interior,
+                                           anchor=NW)
+
+        # track changes to the canvas and frame width and sync them,
+        # also updating the scrollbar
+        def _configure_interior(event):
+            # update the scrollbars to match the size of the inner frame
+            size = (interior.winfo_reqwidth(), interior.winfo_reqheight())
+            canvas.config(scrollregion="0 0 %s %s" % size)
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # update the canvas's width to fit the inner frame
+                canvas.config(width=interior.winfo_reqwidth())
+        interior.bind('<Configure>', _configure_interior)
+
+        def _configure_canvas(event):
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # update the inner frame's width to fill the canvas
+                canvas.itemconfigure(interior_id, width=canvas.winfo_width())
+        canvas.bind('<Configure>', _configure_canvas)

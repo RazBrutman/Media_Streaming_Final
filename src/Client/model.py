@@ -1,6 +1,7 @@
 import httplib
 from threading import Thread
 import pickle
+import errno
 from Queue import Queue
 import sys
 sys.path.insert(0, '../Commons')
@@ -28,11 +29,14 @@ class HttpClient(object):
 
     def Request(self, url, q):
         conn = httplib.HTTPConnection(self.ip, self.port)
-        conn.request("GET", url)
-        rsp = conn.getresponse()
-        #print server response and data
-        data = rsp.read()
-        if url.startswith("/Friends"):
-            data = pickle.loads(data)
-        q.put(data)
-        conn.close()
+        try:
+            conn.request("GET", url)
+            rsp = conn.getresponse()
+            #print server response and data
+            data = rsp.read()
+            if url.startswith("/Friends") or url.startswith("/All"):
+                data = pickle.loads(data)
+            q.put(data)
+            conn.close()
+        except Exception:
+            q.put("Server error")

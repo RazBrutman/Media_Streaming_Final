@@ -46,12 +46,17 @@ class database(object):
         self.conn.commit()
 
     def add_relationship(self, u1, u2):
-        self.c.execute("SELECT ID FROM USERTABLE WHERE Username == '" + u1 + "'")
+        self.c.execute("SELECT ID FROM USERTABLE WHERE Username = '" + u1 + "'")
         u1ID = self.c.fetchone()[0]
-        self.c.execute("SELECT ID FROM USERTABLE WHERE Username == '" + u2 + "'")
+        self.c.execute("SELECT ID FROM USERTABLE WHERE Username = '" + u2 + "'")
         u2ID = self.c.fetchone()[0]
-        self.c.execute("INSERT INTO FRIENDSTABLE VALUES (?, ?)", (u1ID, u2ID))
-        self.conn.commit()
+        self.c.execute("SELECT * FROM FRIENDSTABLE WHERE (F1ID = " + str(u1ID) + " AND F2ID = " + str(u2ID) +
+                       ") OR (F1ID = " + str(u2ID) + " AND F2ID = " + str(u1ID) + ")")
+        try:
+            rel = self.c.fetchone()[0]
+        except TypeError:
+            self.c.execute("INSERT INTO FRIENDSTABLE VALUES (?, ?)", (u1ID, u2ID))
+            self.conn.commit()
 
     def close_db(self):
         self.c.close()
@@ -66,18 +71,24 @@ class database(object):
             self.c.execute("UPDATE USERTABLE SET IP = '" + ip + "' WHERE Username = '" + username + "'")
         return username
 
-    def get_friends(self, username):
+    def get_friends(self, username, *args):
         self.c.execute("SELECT ID FROM USERTABLE WHERE Username = '" + username + "'")
         user_id = self.c.fetchone()
         if user_id:
-            user_id = user_id[0]
-            self.c.execute("SELECT * FROM FRIENDSTABLE WHERE (F1ID = " + str(user_id) + " OR F2ID = " + str(user_id) + ")")
-            friends = [x[1] if x[0] == user_id else x[0] for x in self.c.fetchall()]
             to_return = []
-            for friend in friends:
-                self.c.execute("SELECT * FROM USERTABLE WHERE ID = " + str(friend))
-                data = self.c.fetchone()
-                to_return.append(User(data[1], data[2]))
+            if args:
+                self.c.execute("SELECT * FROM USERTABLE WHERE ID <> " + str(user_id[0]))
+                users = self.c.fetchall()
+                for user in users:
+                    to_return.append(User(user[1], user[2]))
+            else:
+                user_id = user_id[0]
+                self.c.execute("SELECT * FROM FRIENDSTABLE WHERE (F1ID = " + str(user_id) + " OR F2ID = " + str(user_id) + ")")
+                friends = [x[1] if x[0] == user_id else x[0] for x in self.c.fetchall()]
+                for friend in friends:
+                    self.c.execute("SELECT * FROM USERTABLE WHERE ID = " + str(friend))
+                    data = self.c.fetchone()
+                    to_return.append(User(data[1], data[2]))
             return pickle.dumps(to_return)
 
     def get_files(self, username):

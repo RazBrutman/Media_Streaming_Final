@@ -12,7 +12,7 @@ class Server(object):
     def __init__(self):
         Handler = CostumeHandler
         httpd = SocketServer.TCPServer(("", SERVER_PORT), Handler)
-        print "started"
+        print "Started"
         httpd.serve_forever()
 
 
@@ -29,7 +29,16 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         self._set_headers()
 
-        if self.path.startswith("/User"):
+        if self.path.startswith("/All"):
+            params = parse_qs(urlparse(self.path).query)
+            friends = db.get_friends(params['name'][0], "All")
+            self.wfile.write(friends)
+
+        elif self.path.startswith("/Befriend"):
+            params = parse_qs(urlparse(self.path).query)
+            friends = db.add_relationship(params['name1'][0], params['name2'][0])
+
+        elif self.path.startswith("/User"):
             params = parse_qs(urlparse(self.path).query)
             self.wfile.write(db.get_user(params['name'][0], params['ip'][0]))
 
