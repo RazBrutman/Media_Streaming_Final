@@ -1,0 +1,18 @@
+Instrustions:
+
+1. install the following modules:
+	* Pickle
+	* urlparse
+	* Tkinter (for Python 2.7) or tkinter (for Python 3+)
+	* BaseHTTPServer & httplib
+
+2. Install VLC Media Player
+
+3. Run server!
+	a) Run src > Server > server.py
+	b) It will output its local ip
+
+3. Configure settings
+	a) Open src > Commons > Config.py
+	b) in VLC_STREAM_URL paste the path to vlc.exe 
+	c) in SERVER_IP paste the IP outputed by the server script

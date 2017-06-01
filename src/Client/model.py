@@ -1,7 +1,6 @@
 import httplib
 from threading import Thread
 import pickle
-import errno
 from Queue import Queue
 import sys
 sys.path.insert(0, '../Commons')

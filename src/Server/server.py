@@ -62,4 +62,14 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.wfile.write("<html><body><h1>Hi!</h1></body></html>")
         db.close_db()
 
+# Get local Server IP address
+import subprocess
+cmd = subprocess.Popen('ipconfig', shell=True, stdout=subprocess.PIPE).stdout
+l = ""
+for line in cmd:
+    if line.__contains__("IPv4 Address"):
+        l = line
+print "FOR CONFIG FILE: USE " + l.split(":")[-1][1:]
+
+# Start Server
 Server()

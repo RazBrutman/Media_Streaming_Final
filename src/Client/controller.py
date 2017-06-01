@@ -3,7 +3,6 @@ from model import Client
 from view import StreamerGUI
 import Tkinter as tk
 import tkMessageBox
-import socket
 from threading import Thread
 import os
 import socket
@@ -40,7 +39,13 @@ class Controller(object):
         return self.model.send_msg("/Befriend?name1=" + name1 + "&name2=" + name2)
 
     def user_exists(self, name):
-        return self.model.send_msg("/User?name=" + name + "&ip=" + socket.gethostbyname_ex(socket.gethostname())[2][1])
+        import subprocess
+        cmd = subprocess.Popen('ipconfig', shell=True, stdout=subprocess.PIPE).stdout
+        ip = ""
+        for line in cmd:
+            if line.__contains__("IPv4 Address"):
+                ip = line.split(":")[-1][1:]
+        return self.model.send_msg("/User?name=" + name + "&ip=" + ip)
 
     def validate(self, name):
         return self.model.send_msg("/Friends?name=" + name)
