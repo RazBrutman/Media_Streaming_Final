@@ -107,9 +107,9 @@ class MainUserPage(tk.Frame):
         self.tkvar.set(choices[0])
         popupMenu = OptionMenu(top_frame, self.tkvar, choices[0], *choices)
         Label(top_frame, text="add friend:").pack(side="left")
-        popupMenu.pack(side="left")
+        popupMenu.pack(side="left", padx=10)
         f_button = ttk.Button(top_frame, text="Select", command=self.add_friend)
-        f_button.pack(side="left")
+        f_button.pack(side="left", padx=5)
         top_frame.pack(anchor="nw")
 
         self.right_frame = tk.Frame(self)
