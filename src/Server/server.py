@@ -34,9 +34,9 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             friends = db.get_friends(params['name'][0], "All")
             self.wfile.write(friends)
 
-        elif self.path.startswith("/Befriend"):
+        elif self.path.startswith("/Edit"):
             params = parse_qs(urlparse(self.path).query)
-            friends = db.add_relationship(params['name1'][0], params['name2'][0])
+            db.edit_relationship(params['name1'][0], params['name2'][0], bool(params['to_remove'][0]))
 
         elif self.path.startswith("/User"):
             params = parse_qs(urlparse(self.path).query)

@@ -7,8 +7,7 @@ from ttk import *
 
 STREAMER_FONT = ("Chaparral Pro", 26)
 LARGE_FONT = ("Calibri", 22)
-SMALL_FONT = ("Chaparral Pro", 14)
-SMALLER_FONT = ("Calibri", 12)
+SMALL_FONT = ("Calibri", 12)
 BG_COLOR = "#888888"
 
 pages = dict(StartPage='400x300',
@@ -45,16 +44,16 @@ class StreamerGUI(object):
         frame.tkraise()
 
     def validate_username(self, frame):
-        username = self.controller.user_exists(frame.userentry.get())
-        if username:
+        entry = frame.userentry.get()
+        if entry:
             import re
-            if not re.match("^[a-zA-Z0-9_]*$", username):
+            if not re.match("^[a-zA-Z0-9_]*$", entry) or len(entry) > 10:
                 frame.invalid.pack()
             else:
-                self.username = username
+                self.username = self.controller.user_exists(entry)
                 self.start_main_page(frame)
-                frame.userentry.delete(0, 'end')
                 frame.invalid.pack_forget()
+        frame.userentry.delete(0, 'end')
 
     def start_main_page(self, frame):
         page_2 = MainUserPage(self.container, self, self.controller, frame.userentry.get())
@@ -77,7 +76,7 @@ class StartPage(tk.Frame):
         info = tk.Frame(self)
         user = ttk.Label(info, text="Username", font=SMALL_FONT)
         user.grid(row=0, sticky="w")
-        self.userentry = ttk.Entry(info, font=SMALLER_FONT)
+        self.userentry = ttk.Entry(info, font=SMALL_FONT)
         self.userentry.grid(row=1)
         self.invalid = ttk.Label(self, text="Invalid Username!", foreground="red")
         self.sub = ttk.Button(info, text="Submit",
@@ -108,7 +107,7 @@ class MainUserPage(tk.Frame):
         popupMenu = OptionMenu(top_frame, self.tkvar, choices[0], *choices)
         Label(top_frame, text="add friend:").pack(side="left")
         popupMenu.pack(side="left", padx=10)
-        f_button = ttk.Button(top_frame, text="Select", command=self.add_friend)
+        f_button = ttk.Button(top_frame, text="Select", command=lambda: self.edit_friend(False))
         f_button.pack(side="left", padx=5)
         top_frame.pack(anchor="nw")
 
@@ -116,11 +115,10 @@ class MainUserPage(tk.Frame):
 
         self.top_right_frame = VerticalScrolledFrame(self.right_frame)
 
-        friends = self.controller.validate(username)
-        for user in friends:
-            l = ttk.Label(self.top_right_frame.interior, text=user.username, font=SMALL_FONT)
-            l.bind("<Button>", lambda event, data=user: self.test(event, data))
-            l.pack(side="top", pady=10)
+        friends = self.update_friends()
+
+        self.remove_menu = tk.Menu(self, tearoff=0)
+        self.remove_menu.add_command(label="Remove friend", command=lambda: self.controller.edit_relationship(True))
 
         self.bottom_right_frame = tk.Frame(self.right_frame)
         button1 = ttk.Button(self.bottom_right_frame, text='Back to Home',
@@ -144,21 +142,20 @@ class MainUserPage(tk.Frame):
 
         self.left_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
-    def add_friend(self):
-        self.controller.befriend(self.pagecontrol.username, self.tkvar.get())
+    def edit_friend(self, to_remove):
+        self.controller.edit_relationship(self.pagecontrol.username, self.tkvar.get(), to_remove)
         self.update_friends()
 
     def update_friends(self):
+        for child in self.top_right_frame.interior.winfo_children():
+            child.destroy()
         friends = self.controller.validate(self.username)
         for user in friends:
-            add = True
-            for child in self.top_right_frame.interior.winfo_children():
-                if child['text'] == user.username:
-                    add = False
-            if add:
-                l = ttk.Label(self.top_right_frame.interior, text=user.username, font=SMALL_FONT)
-                l.bind("<Button>", lambda event, data=user: self.test(event, data))
-                l.pack(side="top", pady=10)
+            l = ttk.Label(self.top_right_frame.interior, text=user.username, font=SMALL_FONT)
+            l.bind("<Button-1>", lambda event, data=user: self.test(event, data))
+            # l.bind("<Button-3>", lambda event, data=user: self.remove_menu.post(event.x_root, event.y_root))
+            l.pack(side="top", pady=10)
+        return friends
 
     def add_file(self):
         file_path = tkFileDialog.askopenfilename(initialdir="/",
@@ -189,6 +186,8 @@ class MainUserPage(tk.Frame):
             ttk.Label(files_frame, text="No files", font=SMALL_FONT, background=BG_COLOR).pack(anchor="w")
         files_frame.pack(fill="none", expand=True, anchor="nw", padx=30, pady=30)
 
+    def right_click(self, event, name):
+        self.remove_menu.post(event.x_root, event.y_root)
 
 class VerticalScrolledFrame(Frame):
     def __init__(self, parent, *args, **kw):

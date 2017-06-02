@@ -35,8 +35,8 @@ class Controller(object):
     def get_all(self, name):
         return self.model.send_msg("/All?name=" + name)
 
-    def befriend(self, name1, name2):
-        return self.model.send_msg("/Befriend?name1=" + name1 + "&name2=" + name2)
+    def edit_relationship(self, name1, name2, to_remove):
+        return self.model.send_msg("/Befriend?name1=" + name1 + "&name2=" + name2 + "&to_remove=" + str(to_remove))
 
     def user_exists(self, name):
         import subprocess
