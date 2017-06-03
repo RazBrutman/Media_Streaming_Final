@@ -4,6 +4,7 @@ Instrustions:
 1. install the following modules:
 
 	* Pickle
+
 	* urlparse
 
 	* Tkinter (for Python 2.7) or tkinter (for Python 3+)
@@ -16,7 +17,7 @@ Instrustions:
 
 
 
-3. Run server!
+3. Run the Server!
 
 From the computer that you want your server to be run from:
 
@@ -32,10 +33,10 @@ From the computer that you want your server to be run from:
 
 	b) in VLC_STREAM_URL paste the path to vlc.exe
  
-	c) in SERVER_IP paste the IP outputed by the server script
+	c) in SERVER_IP paste the IP output by the server script
 	
 
-ONLY AFTER CONFIGURING STEEINGS!
+ONLY AFTER CONFIGURING SETTINGS!
 
 
 
