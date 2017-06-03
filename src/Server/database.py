@@ -11,7 +11,6 @@ class database(object):
         self.c = self.conn.cursor()
         self.create_tables()
 
-
     def create_tables(self):
         self.c.execute("CREATE TABLE IF NOT EXISTS USERTABLE(ID INTEGER PRIMARY KEY AUTOINCREMENT, "
                        "Username TEXT, "
