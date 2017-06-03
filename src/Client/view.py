@@ -107,7 +107,7 @@ class MainUserPage(tk.Frame):
         popupMenu = OptionMenu(top_frame, self.tkvar, choices[0], *choices)
         Label(top_frame, text="add friend:").pack(side="left")
         popupMenu.pack(side="left", padx=10)
-        f_button = ttk.Button(top_frame, text="Select", command=lambda: self.edit_friend(False))
+        f_button = ttk.Button(top_frame, text="Select", command=lambda: self.edit_friend(self.tkvar.get(), False))
         f_button.pack(side="left", padx=5)
         top_frame.pack(anchor="nw")
 
@@ -116,9 +116,6 @@ class MainUserPage(tk.Frame):
         self.top_right_frame = VerticalScrolledFrame(self.right_frame)
 
         friends = self.update_friends()
-
-        self.remove_menu = tk.Menu(self, tearoff=0)
-        self.remove_menu.add_command(label="Remove friend", command=lambda: self.controller.edit_relationship(True))
 
         self.bottom_right_frame = tk.Frame(self.right_frame)
         button1 = ttk.Button(self.bottom_right_frame, text='Back to Home',
@@ -142,8 +139,19 @@ class MainUserPage(tk.Frame):
 
         self.left_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
-    def edit_friend(self, to_remove):
-        self.controller.edit_relationship(self.pagecontrol.username, self.tkvar.get(), to_remove)
+        self.remove_menu = tk.Menu(self, tearoff=0)
+        self.remove_menu.add_command(label="Remove friend", command=self.remove_friend)
+
+    def popup(self, event):
+        global selected
+        self.remove_menu.post(event.x_root, event.y_root)
+        selected = event.widget
+
+    def remove_friend(self):
+        self.edit_friend(selected["text"], True)
+
+    def edit_friend(self, other_name, to_remove):
+        self.controller.edit_relationship(self.pagecontrol.username, other_name, to_remove)
         self.update_friends()
 
     def update_friends(self):
@@ -153,7 +161,7 @@ class MainUserPage(tk.Frame):
         for user in friends:
             l = ttk.Label(self.top_right_frame.interior, text=user.username, font=SMALL_FONT)
             l.bind("<Button-1>", lambda event, data=user: self.test(event, data))
-            # l.bind("<Button-3>", lambda event, data=user: self.remove_menu.post(event.x_root, event.y_root))
+            l.bind("<Button-3>", self.popup)
             l.pack(side="top", pady=10)
         return friends
 
@@ -185,9 +193,6 @@ class MainUserPage(tk.Frame):
         else:
             ttk.Label(files_frame, text="No files", font=SMALL_FONT, background=BG_COLOR).pack(anchor="w")
         files_frame.pack(fill="none", expand=True, anchor="nw", padx=30, pady=30)
-
-    def right_click(self, event, name):
-        self.remove_menu.post(event.x_root, event.y_root)
 
 class VerticalScrolledFrame(Frame):
     def __init__(self, parent, *args, **kw):

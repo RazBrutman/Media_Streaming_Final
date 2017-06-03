@@ -47,9 +47,11 @@ class database(object):
         u1ID = self.c.fetchone()[0]
         self.c.execute("SELECT ID FROM USERTABLE WHERE Username = '" + u2 + "'")
         u2ID = self.c.fetchone()[0]
-        if to_remove:
-            self.c.execute("DELETE * FROM FRIENDSTABLE WHERE (F1ID = " + str(u1ID) + " AND F2ID = " + str(u2ID) +
+        if to_remove == "True":
+            self.c.execute("DELETE FROM FRIENDSTABLE WHERE (F1ID = " + str(u1ID) + " AND F2ID = " + str(u2ID) +
                            ") OR (F1ID = " + str(u2ID) + " AND F2ID = " + str(u1ID) + ")")
+            self.c.execute("SELECT * FROM FRIENDSTABLE WHERE F1ID = " + str(u1ID) + " OR F2ID = " + str(u1ID))
+            self.conn.commit()
         else:
             self.c.execute("SELECT * FROM FRIENDSTABLE WHERE (F1ID = " + str(u1ID) + " AND F2ID = " + str(u2ID) +
                            ") OR (F1ID = " + str(u2ID) + " AND F2ID = " + str(u1ID) + ")")
@@ -84,8 +86,9 @@ class database(object):
                     to_return.append(User(user[1], user[2]))
             else:
                 user_id = user_id
-                self.c.execute("SELECT * FROM FRIENDSTABLE WHERE (F1ID = " + str(user_id) + " OR F2ID = " + str(user_id) + ")")
-                friends = [x[1] if x[0] == user_id else x[0] for x in self.c.fetchall()]
+                self.c.execute("SELECT * FROM FRIENDSTABLE WHERE F1ID = " + str(user_id) + " OR F2ID = " + str(user_id))
+                d = self.c.fetchall()
+                friends = [x[1] if x[0] == user_id else x[0] for x in d]
                 for friend in friends:
                     self.c.execute("SELECT * FROM USERTABLE WHERE ID = " + str(friend))
                     data = self.c.fetchone()
