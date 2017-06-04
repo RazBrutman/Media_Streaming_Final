@@ -101,5 +101,5 @@ class database(object):
         self.c.execute("SELECT ID FROM USERTABLE WHERE Username == '" + username + "'")
         owner_id = self.c.fetchone()[0]
         self.c.execute("SELECT FileName FROM FILETABLE WHERE OwnerID == '" + str(owner_id) + "'")
-        files = " ".join([x[0] for x in self.c.fetchall()])
+        files = "|".join([x[0] for x in self.c.fetchall()])
         return files

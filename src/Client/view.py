@@ -118,13 +118,14 @@ class MainUserPage(tk.Frame):
         for user in all_users:
             choices.append(user.username)
         self.tkvar = StringVar(top)
-        self.tkvar.set(choices[0])
-        popupMenu = OptionMenu(top, self.tkvar, choices[0], *choices)
-        popupMenu.config(width=14)
+        if choices:
+            self.tkvar.set(choices[0])
+            popupMenu = OptionMenu(top, self.tkvar, choices[0], *choices)
+            popupMenu.config(width=14)
+            popupMenu.grid(row=0, column=1)
         Label(top, text="Add friend:", font=(SMALL_FONT[0] + " Bold", SMALL_FONT[1]), background=BACKGROUND1,
               foreground=FOREGROUND1)\
-            .grid(row=0, column=0, padx=(10, 20))
-        popupMenu.grid(row=0, column=1, pady=10)
+            .grid(row=0, column=0, padx=(10, 20), pady=10)
         f_button = tk.Button(top, text="Select", background=BUTTON_BG, foreground=BUTTON_FG, relief=FLAT, width=10,
                              command=lambda: self.edit_friend(self.tkvar.get(), False))
         f_button.grid(row=0, column=2, padx=20)
@@ -183,7 +184,7 @@ class MainUserPage(tk.Frame):
         for user in friends:
             l = ttk.Label(self.top_right.interior, text=user.username, font=SMALL_FONT, background=BACKGROUND2,
                           foreground=FOREGROUND2)
-            l.bind("<Button-1>", lambda event, data=user: self.test(event, data))
+            l.bind("<Button-1>", lambda event, data=user: self.show_user_files(event, data))
             l.bind("<Button-3>", self.popup)
             l.pack(side="top", pady=10)
         return friends
@@ -193,13 +194,13 @@ class MainUserPage(tk.Frame):
                                                  title="Select file",
                                                  filetypes=(("jpeg files", "*.mp3;*.mp4"), ("all files", "*.*")))
         if file_path:
-            self.controller.add_path(file_path, self.pagecontrol.username)
+            self.controller.add_path(file_path.replace(" ", "*"), self.pagecontrol.username)
 
-    def test(self, event, user):
+    def show_user_files(self, event, user):
         file_list = self.controller.user_files(user.username)
         for child in self.left.winfo_children():
                 child.destroy()
-        files = file_list.split(" ")
+        files = file_list.split("|")
         files_frame = tk.Frame(self.left, background=BACKGROUND3)
         ttk.Label(self.left, text=('Shared files: ' + user.username), font=LARGE_FONT, background=BACKGROUND3,
                   foreground=FOREGROUND2).pack(anchor="nw", pady=30, padx=30)
@@ -210,8 +211,8 @@ class MainUserPage(tk.Frame):
                     shortened = element.split("\\")[-1]
                 else:
                     shortened = element.split("/")[-1]
-                l = (ttk.Label(files_frame, text=shortened, font=SMALL_FONT, background=BACKGROUND3,
-                               foreground=FOREGROUND3), element)
+                l = (ttk.Label(files_frame, text=shortened.replace("*", " "), font=SMALL_FONT, background=BACKGROUND3,
+                               foreground=FOREGROUND3), element.replace("*", " "))
                 l[0].bind("<Button>", lambda e=event, u=user, p=l[1]: self.controller.daemon(e, u, p))
                 l[0].pack(anchor="w")
         else:

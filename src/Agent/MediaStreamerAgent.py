@@ -21,7 +21,7 @@ class MediaServer(object):
 
     def HandleClient(self, connection, client):
         data = connection.recv(2048)
-        path = data.split(" ")[1][1:]
+        path = data.split(" ")[1][1:].replace("+", " ")
         print "new connection\nIP:", client[0], "\nPort:", client[1]
         connection.send("""HTTP/1.1 200 OK
         Content-Type: application/octet-stream\r\nCache-Control: no-cache\r\n\r\n""")

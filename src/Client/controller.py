@@ -6,6 +6,7 @@ import tkMessageBox
 from threading import Thread
 import os
 import socket
+import subprocess
 
 import sys
 sys.path.insert(0, '../Commons')
@@ -39,7 +40,6 @@ class Controller(object):
         return self.model.send_msg("/Edit?name1=" + name1 + "&name2=" + name2 + "&to_remove=" + str(to_remove))
 
     def user_exists(self, name):
-        import subprocess
         cmd = subprocess.Popen('ipconfig', shell=True, stdout=subprocess.PIPE).stdout
         ip = ""
         for line in cmd:
@@ -60,4 +60,5 @@ class Controller(object):
         Thread(target=self.playthread, args=[user.ip, path]).start()
 
     def playthread(self, ip, path):
-        os.system(VLC_STREAM_URL + " http://" + ip + ":18000/" + path)
+        command = '"' + VLC_STREAM_URL + '" "http://' + ip + ':' + str(STREAMER_PORT) + "/" + path + '"'
+        subprocess.call(command, shell=True)
