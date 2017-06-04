@@ -6,7 +6,7 @@ from ttk import *
 
 
 STREAMER_FONT = ("Chaparral Pro", 26)
-LARGE_FONT = ("Calibri", 22)
+LARGE_FONT = ("Calibri Bold", 22)
 SMALL_FONT = ("Calibri", 12)
 
 BACKGROUND1 = "#F38181"
@@ -14,6 +14,8 @@ FOREGROUND1 = "#EAFFD0"
 
 BACKGROUND2 = "#FCE38A"
 FOREGROUND2 = BACKGROUND1
+
+BACKGROUND2_BOTTOM = "#e8cf78"
 
 BACKGROUND3 = "#EAFFD0"
 FOREGROUND3 = BACKGROUND1
@@ -133,16 +135,16 @@ class MainUserPage(tk.Frame):
         friends = self.update_friends()
         self.top_right.grid(row=0, column=0, sticky="ew")
 
-        self.bottom_right = tk.Frame(self.right, width=200, height=100, background=BACKGROUND2)
+        self.bottom_right = tk.Frame(self.right, width=200, height=100, background=BACKGROUND2_BOTTOM)
         self.bottom_right.pack_propagate(0)
-        home = tk.Button(self.bottom_right, text='Back to Home', background=BUTTON_BG, foreground=BUTTON_FG,
-                         relief=FLAT, width=14,
-                         command=lambda: pagecontrol.show_frame(StartPage, pages['StartPage']))
-        home.pack(pady=15)
         add = tk.Button(self.bottom_right, text="Add shared media", background=BUTTON_BG, foreground=BUTTON_FG,
                         relief=FLAT, width=14,
                         command=self.add_file)
-        add.pack()
+        add.pack(pady=15)
+        home = tk.Button(self.bottom_right, text='Sign out', background=BUTTON_BG, foreground=BUTTON_FG,
+                         relief=FLAT, width=14,
+                         command=lambda: pagecontrol.show_frame(StartPage, pages['StartPage']))
+        home.pack()
         self.bottom_right.grid(row=1, column=0, sticky="ew")
 
         self.right.grid(row=1, column=1, sticky="nsew")
