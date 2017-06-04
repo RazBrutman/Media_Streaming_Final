@@ -32,14 +32,12 @@ class database(object):
 
     def add_user(self, name, ip):
         self.c.execute("INSERT INTO USERTABLE VALUES (NULL, ?, ?)", (name, ip))
-        self.conn.commit()
 
     def add_file(self, path, username):
         self.c.execute("SELECT ID FROM USERTABLE WHERE Username == '" + username + "'")
         owner_id = self.c.fetchone()[0]
         file_type = path.split(".")[-1]
         self.c.execute("INSERT INTO FILETABLE VALUES (NULL, ?, ?, ?)", (path, file_type, owner_id))
-        self.conn.commit()
 
     def edit_relationship(self, u1, u2, to_remove):
         self.c.execute("SELECT ID FROM USERTABLE WHERE Username = '" + u1 + "'")
@@ -58,9 +56,9 @@ class database(object):
                 rel = self.c.fetchone()[0]
             except TypeError:
                 self.c.execute("INSERT INTO FRIENDSTABLE VALUES (?, ?)", (u1ID, u2ID))
-                self.conn.commit()
 
     def close_db(self):
+        self.conn.commit()
         self.c.close()
         self.conn.close()
 

@@ -192,7 +192,7 @@ class MainUserPage(tk.Frame):
     def add_file(self):
         file_path = tkFileDialog.askopenfilename(initialdir="/",
                                                  title="Select file",
-                                                 filetypes=(("jpeg files", "*.mp3;*.mp4"), ("all files", "*.*")))
+                                                 filetypes=(("media files", "*.mp3;*.mp4"), ("all files", "*.*")))
         if file_path:
             self.controller.add_path(file_path.replace(" ", "*"), self.pagecontrol.username)
 
