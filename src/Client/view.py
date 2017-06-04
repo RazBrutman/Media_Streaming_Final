@@ -109,7 +109,7 @@ class MainUserPage(tk.Frame):
         self.controller = controller
         self.pagecontrol = pagecontrol
 
-        top = tk.Frame(self, width=650, height=40, background="orange")
+        top = tk.Frame(self, width=650, height=40, background=BACKGROUND1)
         top.grid_propagate(0)
         choices = []
         all_users = self.controller.get_all(username)
@@ -119,9 +119,9 @@ class MainUserPage(tk.Frame):
         self.tkvar.set(choices[0])
         popupMenu = OptionMenu(top, self.tkvar, choices[0], *choices)
         popupMenu.config(width=8)
-        Label(top, text="add friend:", font=SMALL_FONT, background="orange").grid(row=0, column=0)
-        popupMenu.grid(row=0, column=1, pady=10, padx=15)
-        f_button = tk.Button(top, text="Select", background=BUTTON_BG, foreground=BUTTON_FG, relief=FLAT,
+        Label(top, text="Add friend:", font=SMALL_FONT, background=BACKGROUND1).grid(row=0, column=0)
+        popupMenu.grid(row=0, column=1, pady=10, padx=20)
+        f_button = tk.Button(top, text="Select", background=BUTTON_BG, foreground=BUTTON_FG, relief=FLAT, width=8,
                              command=lambda: self.edit_friend(self.tkvar.get(), False))
         f_button.grid(row=0, column=2)
         top.grid(row=0, column=0, columnspan=2, sticky="ew")
@@ -129,15 +129,15 @@ class MainUserPage(tk.Frame):
         self.right = tk.Frame(self, width=200, height=360)
 
         self.top_right = VerticalScrolledFrame(self.right)
-        self.top_right.interior.config(width=200, height=260, background="blue")
+        self.top_right.interior.config(width=200, height=260, background=BACKGROUND2)
         friends = self.update_friends()
         self.top_right.grid(row=0, column=0, sticky="ew")
 
-        self.bottom_right = tk.Frame(self.right, width=200, height=100, background="yellow")
+        self.bottom_right = tk.Frame(self.right, width=200, height=100, background=BACKGROUND2)
         self.bottom_right.pack_propagate(0)
         home = tk.Button(self.bottom_right, text='Back to Home', background=BUTTON_BG, foreground=BUTTON_FG,
-                            relief=FLAT, width=14,
-                            command=lambda: pagecontrol.show_frame(StartPage, pages['StartPage']))
+                         relief=FLAT, width=14,
+                         command=lambda: pagecontrol.show_frame(StartPage, pages['StartPage']))
         home.pack(pady=15)
         add = tk.Button(self.bottom_right, text="Add shared media", background=BUTTON_BG, foreground=BUTTON_FG,
                         relief=FLAT, width=14,
@@ -147,10 +147,10 @@ class MainUserPage(tk.Frame):
 
         self.right.grid(row=1, column=1, sticky="nsew")
 
-        self.left = tk.Frame(self, width=450, height=360, background="green")
+        self.left = tk.Frame(self, width=450, height=370, background=BACKGROUND3)
         self.left.pack_propagate(0)
-        self.info = ttk.Label(self.left, text="No friends yet :(", font=LARGE_FONT, background=BACKGROUND2,
-                              foreground=FOREGROUND2)
+        self.info = ttk.Label(self.left, text="No friends yet :(", font=LARGE_FONT, background=BACKGROUND3,
+                              foreground=FOREGROUND3)
         if friends:
             self.info['text'] = "Click on name to view files..."
         self.info.pack(fill="none", expand=True, anchor="nw", pady=30, padx=30)
@@ -176,8 +176,8 @@ class MainUserPage(tk.Frame):
             child.destroy()
         friends = self.controller.validate(self.username)
         for user in friends:
-            l = ttk.Label(self.top_right.interior, text=user.username, font=SMALL_FONT, background="blue",
-                          foreground=FOREGROUND1)
+            l = ttk.Label(self.top_right.interior, text=user.username, font=SMALL_FONT, background=BACKGROUND2,
+                          foreground=FOREGROUND2)
             l.bind("<Button-1>", lambda event, data=user: self.test(event, data))
             l.bind("<Button-3>", self.popup)
             l.pack(side="top", pady=10)
@@ -195,8 +195,8 @@ class MainUserPage(tk.Frame):
         for child in self.left.winfo_children():
                 child.destroy()
         files = file_list.split(" ")
-        files_frame = tk.Frame(self.left, background=BACKGROUND2)
-        ttk.Label(self.left, text='Shared files', font=LARGE_FONT, background=BACKGROUND2,
+        files_frame = tk.Frame(self.left, background=BACKGROUND3)
+        ttk.Label(self.left, text=('Shared files: ' + user.username), font=LARGE_FONT, background=BACKGROUND3,
                   foreground=FOREGROUND2).pack(anchor="nw", pady=30, padx=30)
         if files[0] != "":
             for element in files:
@@ -205,13 +205,13 @@ class MainUserPage(tk.Frame):
                     shortened = element.split("\\")[-1]
                 else:
                     shortened = element.split("/")[-1]
-                l = (ttk.Label(files_frame, text=shortened, font=SMALL_FONT, background=BACKGROUND2,
-                               foreground=FOREGROUND2), element)
+                l = (ttk.Label(files_frame, text=shortened, font=SMALL_FONT, background=BACKGROUND3,
+                               foreground=FOREGROUND3), element)
                 l[0].bind("<Button>", lambda e=event, u=user, p=l[1]: self.controller.daemon(e, u, p))
                 l[0].pack(anchor="w")
         else:
-            ttk.Label(files_frame, text="No files", font=SMALL_FONT, background=BACKGROUND2,
-                      foreground=FOREGROUND2).pack(anchor="w")
+            ttk.Label(files_frame, text="No files", font=SMALL_FONT, background=BACKGROUND3,
+                      foreground=FOREGROUND3).pack(anchor="w")
         files_frame.pack(fill="none", expand=True, anchor="nw", padx=30, pady=30)
 
 
