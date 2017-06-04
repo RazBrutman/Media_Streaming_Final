@@ -9,19 +9,19 @@ STREAMER_FONT = ("Chaparral Pro", 26)
 LARGE_FONT = ("Calibri Bold", 22)
 SMALL_FONT = ("Calibri", 12)
 
-BACKGROUND1 = "#F38181"
-FOREGROUND1 = "#EAFFD0"
+BACKGROUND1 = "#2D4059"
+FOREGROUND1 = "#e56b62"
 
-BACKGROUND2 = "#FCE38A"
+BACKGROUND2 = "#8ca8cc"
 FOREGROUND2 = BACKGROUND1
 
-BACKGROUND2_BOTTOM = "#e8cf78"
+BACKGROUND2_BOTTOM = "#A3BBDA"
 
-BACKGROUND3 = "#EAFFD0"
+BACKGROUND3 = "#b9cde8"
 FOREGROUND3 = BACKGROUND1
 
-BUTTON_BG = "#95E1D3"
-BUTTON_FG = "#2e544d"
+BUTTON_BG = "#fae8b8"
+BUTTON_FG = "#B5514A"
 
 pages = dict(StartPage='400x300',
              MainUserPage='650x400')
@@ -120,29 +120,32 @@ class MainUserPage(tk.Frame):
         self.tkvar = StringVar(top)
         self.tkvar.set(choices[0])
         popupMenu = OptionMenu(top, self.tkvar, choices[0], *choices)
-        popupMenu.config(width=8)
-        Label(top, text="Add friend:", font=SMALL_FONT, background=BACKGROUND1).grid(row=0, column=0)
-        popupMenu.grid(row=0, column=1, pady=10, padx=20)
-        f_button = tk.Button(top, text="Select", background=BUTTON_BG, foreground=BUTTON_FG, relief=FLAT, width=8,
+        popupMenu.config(width=14)
+        Label(top, text="Add friend:", font=(SMALL_FONT[0] + " Bold", SMALL_FONT[1]), background=BACKGROUND1,
+              foreground=FOREGROUND1)\
+            .grid(row=0, column=0, padx=(10, 20))
+        popupMenu.grid(row=0, column=1, pady=10)
+        f_button = tk.Button(top, text="Select", background=BUTTON_BG, foreground=BUTTON_FG, relief=FLAT, width=10,
                              command=lambda: self.edit_friend(self.tkvar.get(), False))
-        f_button.grid(row=0, column=2)
+        f_button.grid(row=0, column=2, padx=20)
         top.grid(row=0, column=0, columnspan=2, sticky="ew")
 
         self.right = tk.Frame(self, width=200, height=360)
 
         self.top_right = VerticalScrolledFrame(self.right)
         self.top_right.interior.config(width=200, height=260, background=BACKGROUND2)
+        self.top_right.canvas.config(background=BACKGROUND2)
         friends = self.update_friends()
         self.top_right.grid(row=0, column=0, sticky="ew")
 
         self.bottom_right = tk.Frame(self.right, width=200, height=100, background=BACKGROUND2_BOTTOM)
         self.bottom_right.pack_propagate(0)
         add = tk.Button(self.bottom_right, text="Add shared media", background=BUTTON_BG, foreground=BUTTON_FG,
-                        relief=FLAT, width=14,
+                        relief=FLAT, width=16,
                         command=self.add_file)
         add.pack(pady=15)
         home = tk.Button(self.bottom_right, text='Sign out', background=BUTTON_BG, foreground=BUTTON_FG,
-                         relief=FLAT, width=14,
+                         relief=FLAT, width=16,
                          command=lambda: pagecontrol.show_frame(StartPage, pages['StartPage']))
         home.pack()
         self.bottom_right.grid(row=1, column=0, sticky="ew")
@@ -224,7 +227,7 @@ class VerticalScrolledFrame(Frame):
         # create a canvas object and a vertical scrollbar for scrolling it
         vscrollbar = Scrollbar(self, orient=VERTICAL)
         vscrollbar.pack(fill=Y, side=RIGHT, expand=FALSE)
-        canvas = Canvas(self, bd=0, highlightthickness=0, background=BACKGROUND1, yscrollcommand=vscrollbar.set)
+        canvas = Canvas(self, bd=0, highlightthickness=0, yscrollcommand=vscrollbar.set)
         canvas.pack(side=LEFT, fill=BOTH, expand=TRUE)
         vscrollbar.config(command=canvas.yview)
 
@@ -236,7 +239,7 @@ class VerticalScrolledFrame(Frame):
         self.interior = interior = tk.Frame(canvas)
         interior_id = canvas.create_window(0, 0, window=interior,
                                            anchor=NW)
-
+        self.canvas = canvas
         # track changes to the canvas and frame width and sync them,
         # also updating the scrollbar
         def _configure_interior(event):
