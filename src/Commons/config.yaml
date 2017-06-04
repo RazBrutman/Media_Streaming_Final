@@ -1,9 +1,0 @@
-client:
-    #Location of VLC.exe
-    #VLC_STREAM_URL: "\"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe\""
-    VLC_STREAM_URL:
-server:
-    SERVER_PORT: 8000
-streamer:
-    STREAMER_PORT: 18000
-
