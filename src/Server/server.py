@@ -42,7 +42,6 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             params = parse_qs(urlparse(self.path).query)
             self.wfile.write(db.get_user(params['name'][0], params['ip'][0]))
 
-
         elif self.path.startswith("/Friends"):
             params = parse_qs(urlparse(self.path).query)
             friends = db.get_friends(params['name'][0])
