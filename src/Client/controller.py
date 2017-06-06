@@ -13,8 +13,6 @@ sys.path.insert(0, '../Commons')
 from Config import *
 
 
-
-
 class Controller(object):
     def __init__(self):
         self.model = Client()
