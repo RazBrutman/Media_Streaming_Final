@@ -1,7 +1,7 @@
-Instrustions:
+Instrustions (for remote server):
 
 
-1. install the following modules:
+1. Make sure you have the following modules:
 
 	* Pickle
 
@@ -10,34 +10,6 @@ Instrustions:
 	* Tkinter (for Python 2.7) or tkinter (for Python 3+)
 
 	* BaseHTTPServer & httplib
-
-
-
-2. Install VLC Media Player (If you don't already have it installed)
-
-
-
-3. Run the Server!
-
-From the computer that you want your server to be run from:
-
-	a) Run src > Server > server.py
-
-	b) It will output its local ip
-
-
-
-3. Configure settings
-
-	a) Open src > Commons > Config.py
-
-	b) in VLC_STREAM_URL paste the path to vlc.exe
- 
-	c) in SERVER_IP paste the IP output by the server script
-	
-
-ONLY AFTER CONFIGURING SETTINGS!
-
 
 
 4. Run Client components!

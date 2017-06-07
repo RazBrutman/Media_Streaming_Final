@@ -16,9 +16,9 @@ from Config import *
 class Controller(object):
     def __init__(self):
         self.model = Client()
-        if self.model.send_msg("Test") == "Server error":
-            tkMessageBox.showerror("Server error", "App server is not connected! Please try again")
-            return
+        # if self.model.send_msg("/") == "Server error":
+        #     tkMessageBox.showerror("Server error", "App server is not connected! Please try again")
+        #     return
         self.root = tk.Tk()
         self.view = StreamerGUI(self.root, self)
         self.run()

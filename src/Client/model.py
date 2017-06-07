@@ -37,5 +37,6 @@ class HttpClient(object):
                 data = pickle.loads(data)
             q.put(data)
             conn.close()
-        except Exception:
+        except Exception as ex:
+            print ex
             q.put("Server error")
