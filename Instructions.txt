@@ -12,7 +12,7 @@ Instrustions (for remote server):
 	* BaseHTTPServer & httplib
 
 
-4. Run Client components!
+2. Run Client components!
 
 From every computer that you want to run a client from (including server computer):
 
@@ -20,5 +20,5 @@ From every computer that you want to run a client from (including server compute
 
 
 
-5. Enjoy :)
+3. Enjoy :)
 	
