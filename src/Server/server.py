@@ -1,5 +1,4 @@
 import BaseHTTPServer
-import ssl
 import SocketServer
 from urlparse import urlparse, parse_qs
 from database import database
