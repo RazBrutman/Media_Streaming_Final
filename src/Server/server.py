@@ -10,6 +10,9 @@ from Config import *
 class Server(object):
 
     def __init__(self):
+        """
+        Initiate a TCP server with a costume handler for GET requests
+        """
         Handler = CostumeHandler
         httpd = SocketServer.TCPServer(("", SERVER_PORT), Handler)
         print "Started"
@@ -17,7 +20,9 @@ class Server(object):
 
 
 class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-
+    """
+    Costume handler fot HTTP requests
+    """
     def _set_headers(self):
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
@@ -63,7 +68,7 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 # Get local Server IP address
 import socket
-print "FOR CONFIG FILE: USE " + socket.gethostbyname(socket.gethostname())]
+print "FOR CONFIG FILE: USE " + socket.gethostbyname(socket.gethostname())
 
 # Start Server
 Server()
