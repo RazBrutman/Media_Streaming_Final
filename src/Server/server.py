@@ -63,7 +63,7 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.wfile.write("1")
 
         else:
-            self.wfile.write("<html><body><h1>Saar The King</h1></body></html>")
+            self.wfile.write("<html><body><h1>Hi :)</h1></body></html>")
         db.close_db()
 
 # Get local Server IP address
