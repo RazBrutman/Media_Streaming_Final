@@ -62,13 +62,8 @@ class CostumeHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         db.close_db()
 
 # Get local Server IP address
-import subprocess
-cmd = subprocess.Popen('ipconfig', shell=True, stdout=subprocess.PIPE).stdout
-l = ""
-for line in cmd:
-    if line.__contains__("IPv4 Address"):
-        l = line
-print "FOR CONFIG FILE: USE " + l.split(":")[-1][1:]
+import socket
+print "FOR CONFIG FILE: USE " + socket.gethostbyname(socket.gethostname())]
 
 # Start Server
 Server()
