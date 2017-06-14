@@ -38,12 +38,9 @@ class Controller(object):
         return self.model.send_msg("/Edit?name1=" + name1 + "&name2=" + name2 + "&to_remove=" + str(to_remove))
 
     def user_exists(self, name):
-        cmd = subprocess.Popen('ipconfig', shell=True, stdout=subprocess.PIPE).stdout
-        ip = ""
-        for line in cmd:
-            if line.__contains__("IPv4 Address"):
-                ip = line.split(":")[-1][1:]
-        return self.model.send_msg("/User?name=" + name + "&ip=" + ip)
+        # Get local Server IP address
+        import socket
+        return self.model.send_msg("/User?name=" + name + "&ip=" + socket.gethostbyname(socket.gethostname()))
 
     def validate(self, name):
         return self.model.send_msg("/Friends?name=" + name)
